@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:new_calender/features/calender/presentation/cubits/get_month_data/get_month_data_cubit.dart';
 import 'package:new_calender/features/calender/presentation/cubits/year_calandar_view/year_calandar_view_cubit.dart';
 
 class MonthDropDown extends StatefulWidget {
@@ -26,8 +27,12 @@ class _MonthDropDownState extends State<MonthDropDown> {
     'December',
   ];
   late final YearCalendarViewCubit yearCalendarViewCubit;
+  late final GetMonthDataCubit getMonthDateCubit;
+
   @override
   void initState() {
+    getMonthDateCubit = context.read<GetMonthDataCubit>();
+
     yearCalendarViewCubit = context.read<YearCalendarViewCubit>();
     super.initState();
   }
@@ -46,6 +51,8 @@ class _MonthDropDownState extends State<MonthDropDown> {
         value: selectedMonth,
         onChanged: (String? newValue) {
           yearCalendarViewCubit.updateCalendarView(month: months.indexOf(newValue ?? 'January') + 1);
+          getMonthDateCubit.month = months.indexOf(newValue ?? 'January') + 1;
+          getMonthDateCubit.getMonthData();
           setState(() {
             selectedMonth = newValue;
           });

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_calender/core/widgets/default_scaffold.dart';
+import 'package:new_calender/features/calender/presentation/cubits/get_month_data/get_month_data_cubit.dart';
 import 'package:new_calender/features/calender/presentation/cubits/year_calandar_view/year_calandar_view_cubit.dart';
+import 'package:new_calender/features/calender/presentation/widgets/button_group.dart';
+import 'package:new_calender/features/calender/presentation/widgets/calendar_day_info.dart';
 import 'package:new_calender/features/calender/presentation/widgets/month_dropdown.dart';
 import 'package:new_calender/utils/colors/clr.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -18,10 +21,15 @@ class _YearCalendarViewState extends State<YearCalendarView> {
   late final TextEditingController textEditingController;
   late final YearCalendarViewCubit yearCalendarViewCubit;
   DateTime? _selectedDay;
-
+  late final GetMonthDataCubit getMonthDateCubit;
   @override
   void initState() {
     yearCalendarViewCubit = context.read<YearCalendarViewCubit>();
+    getMonthDateCubit = context.read<GetMonthDataCubit>();
+    getMonthDateCubit.getMonthData();
+    Future.delayed(const Duration(seconds: 10)).then((_) {
+      getMonthDateCubit.getCalendarDay();
+    });
     textEditingController = TextEditingController();
     textEditingController.text = DateTime.now().year.toString();
     super.initState();
@@ -32,13 +40,16 @@ class _YearCalendarViewState extends State<YearCalendarView> {
     var outlineBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(5),
     );
+    // getMonthDateCubit.getCalendarDay(30);
     return DefaultScaffold(
       title: 'Full Year Hijri Calendar',
       child: BlocBuilder<YearCalendarViewCubit, YearCalendarViewState>(
         builder: (context, state) {
           return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(height: 25.h),
+              const ButtonGroup(),
               SizedBox(height: 25.h),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -70,7 +81,8 @@ class _YearCalendarViewState extends State<YearCalendarView> {
                               return;
                             }
                             yearCalendarViewCubit.updateCalendarView(year: selectedYear);
-
+                            getMonthDateCubit.year = selectedYear;
+                            getMonthDateCubit.getMonthData();
                             // year = selectedYear;
                             // setState(() {});
                           } catch (e) {
@@ -92,7 +104,7 @@ class _YearCalendarViewState extends State<YearCalendarView> {
               SizedBox(height: 10.h),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
-                height: 400.h,
+                height: 350.h,
                 width: double.infinity,
                 child: TableCalendar(
                     firstDay: DateTime.utc(601, 1, 1),
@@ -110,6 +122,8 @@ class _YearCalendarViewState extends State<YearCalendarView> {
                         month: selectedDay.month,
                         day: selectedDay.day,
                       );
+                      getMonthDateCubit.day = selectedDay.day;
+                      getMonthDateCubit.getCalendarDay();
                     },
                     calendarStyle: const CalendarStyle(
                       selectedDecoration: BoxDecoration(
@@ -124,18 +138,7 @@ class _YearCalendarViewState extends State<YearCalendarView> {
                     shouldFillViewport: true,
                     startingDayOfWeek: StartingDayOfWeek.sunday),
               ),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Clr.primaryColorLight,
-                    border: Border.all(color: Clr.primaryColorLight),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40),
-                    ),
-                  ),
-                ),
-              ),
+              const CalendarDayInfo(),
             ],
           );
         },

@@ -52,7 +52,7 @@ class ServerFailure extends Failure {
       // status code == 401 >> bad respnse mainly you send in the header wrong token
       // status code == 403 >> bad respnse mainly the token is correct but you are unauthorized to view this page
     } else if ([400, 401, 403].contains(statusCode)) {
-      return ServerFailure(data['error']['message']);
+      return ServerFailure(data['message']);
     }
     return ServerFailure('There was an error, Please try again later');
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_calender/core/service_locator/service_locator.dart';
+import 'package:new_calender/features/calender/presentation/cubits/get_month_data/get_month_data_cubit.dart';
 import 'package:new_calender/features/calender/presentation/cubits/year_calandar_view/year_calandar_view_cubit.dart';
 import 'package:new_calender/features/calender/presentation/views/year_view.dart';
 
@@ -24,15 +25,14 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => YearCalendarViewCubit(),
-          )
-        ],
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
           ),
-          home: const YearCalendarView(),
+          BlocProvider(
+            create: (context) => GetMonthDataCubit(calanderRepoImp: serviceLocator()),
+          ),
+        ],
+        child: const MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: YearCalendarView(),
         ),
       ),
     );
